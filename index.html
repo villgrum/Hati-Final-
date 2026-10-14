@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Hati</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <a class="brand" href="index.html">Hati</a>
+        <a class="top-link" href="#groups">My groups</a>
+      </div>
+    </header>
+    <main class="wrap">
+      <section class="intro">
+        <h1>Shared money, kept honest</h1>
+        <p>
+          Split a trip or hangout, or run a class fund, with one holder who
+          keeps everything in order
+        </p>
+      </section>
+      <section class="block">
+        <h2 class="section-title">Start a group</h2>
+        <div class="choices">
+          <a class="choice" href="new.html?type=hangout">
+            <strong>Hangout</strong>
+            <span
+              >Trips and nights out, friends take turns paying and Hati works
+              out who pays whom</span
+            >
+          </a>
+          <a class="choice" href="new.html?type=ambagan">
+            <strong>Ambagan</strong>
+            <span
+              >Group funds, everyone chips in and you track what came in and
+              what was spent</span
+            >
+          </a>
+        </div>
+      </section>
+      <section class="block" id="groups">
+        <h2 class="section-title">My groups on this device</h2>
+        <ul class="group-list" id="group-list"></ul>
+        <p class="empty" id="empty-groups">No groups yet, pick a type above</p>
+      </section>
+      <section class="how block">
+        <h2 class="section-title">How it works</h2>
+        <ol>
+          <li>You create a group and keep track of the money as the holder</li>
+          <li>
+            You share a view-only link, friends can see everything and change
+            nothing
+          </li>
+          <li>You mark payments as paid as people settle up</li>
+        </ol>
+      </section>
+    </main>
+    <footer>
+      <div class="wrap">
+        Only the holder can change anything, everyone else gets a view-only link
+      </div>
+    </footer>
+    <script src="js/store.js"></script>
+    <script src="js/peso.js"></script>
+    <script src="js/dom.js"></script>
+    <script src="js/home.js"></script>
+  </body>
+</html>

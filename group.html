@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Hati</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <a class="brand" href="index.html">Hati</a>
+        <a class="top-link" href="index.html">All groups</a>
+      </div>
+    </header>
+    <main class="wrap narrow">
+      <div id="missing" hidden>
+        <p id="missing-text">This group was not found on this device</p>
+        <p><a href="index.html">Back to all groups</a></p>
+      </div>
+      <div id="group" hidden>
+        <div class="group-top">
+          <div class="group-title">
+            <h1 id="title"></h1>
+            <span class="role">Holder</span>
+          </div>
+          <a class="button small" id="add-bill" href="#">Add a bill</a>
+        </div>
+        <p class="role-note" id="note"></p>
+        <nav class="tabs" id="tabs" aria-label="Group sections">
+          <button type="button" data-tab="overview">Overview</button>
+          <button type="button" data-tab="bills">Bills</button>
+          <button type="button" data-tab="settle">Settle up</button>
+          <button type="button" data-tab="history">History</button>
+        </nav>
+
+        <section id="tab-overview">
+          <div class="panel">
+            <p class="big-line" id="spent"></p>
+            <div class="meter" role="img" id="meter">
+              <span id="meter-fill"></span>
+            </div>
+            <p class="sub" id="settled"></p>
+          </div>
+          <div class="panel">
+            <h2 class="section-title">Where everyone stands</h2>
+            <ul class="stand" id="stand"></ul>
+            <p class="suggest" id="suggest"></p>
+          </div>
+        </section>
+
+        <section id="tab-bills" hidden>
+          <ul class="bill-list" id="bill-list"></ul>
+          <p class="empty" id="no-bills">No bills yet, press Add a bill</p>
+        </section>
+
+        <section id="tab-settle" hidden>
+          <p class="sub" id="settle-sub"></p>
+          <div class="receipt">
+            <h2>Who pays whom</h2>
+            <ul class="lines" id="plan-list"></ul>
+            <p class="empty" id="plan-empty"></p>
+            <p class="total">
+              <span>Still to be paid</span><strong id="total-amount"></strong>
+            </p>
+          </div>
+          <h2 class="feed-title" id="paid-title">Paid so far</h2>
+          <ul class="paid-list" id="paid-list"></ul>
+        </section>
+
+        <section id="tab-history" hidden>
+          <ul class="feed" id="feed"></ul>
+        </section>
+      </div>
+    </main>
+    <script src="js/store.js"></script>
+    <script src="js/peso.js"></script>
+    <script src="js/dom.js"></script>
+    <script src="js/calc.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/sync.js"></script>
+    <script src="js/share.js"></script>
+    <script src="js/group.js"></script>
+  </body>
+</html>

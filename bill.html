@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Hati, add a bill</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <a class="brand" href="index.html">Hati</a>
+        <a class="top-link" id="back" href="index.html">Back</a>
+      </div>
+    </header>
+    <main class="wrap narrow">
+      <h1 class="section-title">Add a bill</h1>
+      <form id="bill-form" novalidate>
+        <label class="field" for="what">What was it for</label>
+        <input
+          type="text"
+          id="what"
+          maxlength="40"
+          placeholder="Dinner at the market"
+        />
+
+        <label class="field" for="category">Category</label>
+        <select id="category">
+          <option>Food</option>
+          <option>Transport</option>
+          <option>Stay</option>
+          <option>Activities</option>
+          <option>Drinks</option>
+          <option>Other</option>
+        </select>
+
+        <div id="custom-box" hidden>
+          <label class="field" for="custom">Type the category</label>
+          <input
+            type="text"
+            id="custom"
+            maxlength="20"
+            placeholder="Souvenirs"
+          />
+        </div>
+
+        <label class="field" for="amount">How much</label>
+        <div class="money">
+          <span>₱</span>
+          <input
+            type="text"
+            id="amount"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="1,200"
+          />
+        </div>
+
+        <label class="field" for="payer">Who paid</label>
+        <select id="payer"></select>
+
+        <label class="field">Who shared it</label>
+        <p class="helper">Everyone is included, tap a name to leave them out</p>
+        <div class="people" id="people"></div>
+        <p class="share-line" id="share-line">
+          Each person's share will show here
+        </p>
+
+        <label class="field" for="when">When</label>
+        <input type="date" id="when" />
+
+        <div class="form-actions">
+          <button class="button" type="submit">Save bill</button>
+          <p class="status-line" id="message" role="status"></p>
+        </div>
+      </form>
+    </main>
+    <script src="js/store.js"></script>
+    <script src="js/peso.js"></script>
+    <script src="js/dom.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/sync.js"></script>
+    <script src="js/bill.js"></script>
+  </body>
+</html>

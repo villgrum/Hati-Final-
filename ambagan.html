@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Hati</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <a class="brand" href="index.html">Hati</a>
+        <a class="top-link" href="index.html">All groups</a>
+      </div>
+    </header>
+    <main class="wrap narrow">
+      <div id="missing" hidden>
+        <p>This group was not found on this device</p>
+        <p><a href="index.html">Back to all groups</a></p>
+      </div>
+      <div id="group" hidden>
+        <div class="group-top">
+          <div class="group-title">
+            <h1 id="title"></h1>
+            <span class="role">Holder</span>
+          </div>
+        </div>
+        <p class="role-note" id="note"></p>
+        <nav class="tabs" id="tabs" aria-label="Group sections">
+          <button type="button" data-tab="summary">Summary</button>
+          <button type="button" data-tab="people">People</button>
+          <button type="button" data-tab="spending">Spending</button>
+          <button type="button" data-tab="history">History</button>
+        </nav>
+        <p class="status-line" id="notice" role="status"></p>
+
+        <section id="tab-summary">
+          <div class="panel">
+            <p class="big-line" id="collected"></p>
+            <div class="meter" role="img" id="meter">
+              <span id="meter-fill"></span>
+            </div>
+            <div class="goal-row" id="goal-row">
+              <span id="goal-text"></span>
+              <button
+                class="quiet-action"
+                type="button"
+                id="goal-edit"
+              ></button>
+            </div>
+            <form class="goal-form" id="goal-form" hidden novalidate>
+              <label class="field" for="goal">Goal</label>
+              <div class="inline-form">
+                <div class="money">
+                  <span>₱</span>
+                  <input
+                    type="text"
+                    id="goal"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    placeholder="10,000"
+                  />
+                </div>
+                <button class="button small" type="submit">Save goal</button>
+              </div>
+              <div class="row-actions">
+                <button class="quiet-action" type="button" id="goal-cancel">
+                  Cancel
+                </button>
+                <span id="goal-remove-slot"></span>
+              </div>
+            </form>
+            <p class="sub" id="givers"></p>
+            <p class="sub owed" id="owed-line" hidden></p>
+          </div>
+
+          <div class="panel">
+            <div class="fund-top">
+              <div>
+                <span>Left in the fund</span
+                ><strong class="left" id="left-total"></strong>
+              </div>
+              <div class="right">
+                <span>Spent so far</span
+                ><strong class="spent" id="spent-total"></strong>
+              </div>
+            </div>
+            <div class="fund-bar" id="fund-bar" role="img">
+              <span class="spent"></span><span class="left"></span>
+            </div>
+            <p class="fund-note" id="fund-note"></p>
+          </div>
+
+          <div class="panel">
+            <h2 class="section-title">Payment schedule</h2>
+            <p id="schedule-hint">
+              Ask everyone to give on set days, and what they miss adds up
+            </p>
+            <div id="schedule-view" hidden>
+              <p class="sub" id="schedule-text"></p>
+              <p id="next-day"></p>
+              <div class="row-actions">
+                <button class="quiet-action" type="button" id="schedule-change">
+                  Change
+                </button>
+                <span id="schedule-remove-slot"></span>
+              </div>
+            </div>
+            <button class="button ghost small" type="button" id="schedule-add">
+              Add a payment schedule
+            </button>
+            <form id="schedule-form" hidden novalidate>
+              <label class="field">Which days</label>
+              <div class="people" id="schedule-days">
+                <label class="chip"
+                  ><input type="checkbox" value="1" />Monday</label
+                >
+                <label class="chip"
+                  ><input type="checkbox" value="2" />Tuesday</label
+                >
+                <label class="chip"
+                  ><input type="checkbox" value="3" />Wednesday</label
+                >
+                <label class="chip"
+                  ><input type="checkbox" value="4" />Thursday</label
+                >
+                <label class="chip"
+                  ><input type="checkbox" value="5" />Friday</label
+                >
+                <label class="chip"
+                  ><input type="checkbox" value="6" />Saturday</label
+                >
+                <label class="chip"
+                  ><input type="checkbox" value="0" />Sunday</label
+                >
+              </div>
+              <label class="field" for="schedule-amount"
+                >Each person gives</label
+              >
+              <div class="money">
+                <span>₱</span>
+                <input
+                  type="text"
+                  id="schedule-amount"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  placeholder="20"
+                />
+              </div>
+              <label class="field" for="schedule-start">Starts</label>
+              <input type="date" id="schedule-start" />
+              <div class="form-actions">
+                <button class="button" type="submit">Save schedule</button>
+                <button class="quiet-action" type="button" id="schedule-cancel">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section id="tab-people" hidden>
+          <form id="person-form" class="entry" novalidate>
+            <input
+              type="text"
+              id="person"
+              autocomplete="off"
+              placeholder="Ana, Ben, Carla"
+            />
+            <button class="button ghost small" type="submit">Add</button>
+          </form>
+          <ul class="people-list" id="people-list"></ul>
+          <p class="empty" id="no-people">No names yet</p>
+          <h2 class="feed-title" id="payments-title">Latest payments</h2>
+          <ul class="bill-list" id="payment-list"></ul>
+        </section>
+
+        <section id="tab-spending" hidden>
+          <form id="spend-form" class="tab-form" novalidate>
+            <label class="field" for="spend-what">What was it for</label>
+            <input
+              type="text"
+              id="spend-what"
+              maxlength="40"
+              autocomplete="off"
+              placeholder="Decorations"
+            />
+            <label class="field" for="spend-amount">How much</label>
+            <div class="money">
+              <span>₱</span>
+              <input
+                type="text"
+                id="spend-amount"
+                inputmode="decimal"
+                autocomplete="off"
+                placeholder="500"
+              />
+            </div>
+            <label class="field" for="spend-date">When</label>
+            <input type="date" id="spend-date" />
+            <div class="form-actions">
+              <button class="button" type="submit">Add spending</button>
+            </div>
+          </form>
+          <ul class="bill-list" id="spend-list"></ul>
+          <p class="empty" id="no-spending">Nothing spent yet</p>
+        </section>
+
+        <section id="tab-history" hidden>
+          <ul class="feed" id="feed"></ul>
+        </section>
+      </div>
+    </main>
+    <script src="js/store.js"></script>
+    <script src="js/peso.js"></script>
+    <script src="js/dom.js"></script>
+    <script src="js/tools.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/sync.js"></script>
+    <script src="js/share.js"></script>
+    <script src="js/ambagan.js"></script>
+  </body>
+</html>

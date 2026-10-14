@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Hati, new group</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <a class="brand" href="index.html">Hati</a>
+        <a class="top-link" href="index.html">All groups</a>
+      </div>
+    </header>
+    <main class="wrap narrow">
+      <h1 class="section-title" id="page-title">New group</h1>
+      <form id="group-form" novalidate>
+        <label class="field" for="name">Name of the group</label>
+        <input
+          type="text"
+          id="name"
+          maxlength="40"
+          autocomplete="off"
+          placeholder="Baguio trip"
+        />
+
+        <label class="field" for="person">Who is in it</label>
+        <div class="entry">
+          <input
+            type="text"
+            id="person"
+            maxlength="20"
+            autocomplete="off"
+            placeholder="Ana, Ben, Carla"
+          />
+          <button class="button ghost small" type="button" id="add-person">
+            Add
+          </button>
+        </div>
+        <ul class="chips" id="chips"></ul>
+        <p class="count" id="count"></p>
+
+        <div id="goal-box" hidden>
+          <label class="field" for="goal"
+            >Goal <span class="muted">optional</span></label
+          >
+          <div class="money">
+            <span>₱</span>
+            <input
+              type="text"
+              id="goal"
+              inputmode="decimal"
+              autocomplete="off"
+              placeholder="10,000"
+            />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="button" type="submit">Create group</button>
+          <p class="status-line" id="message" role="status"></p>
+        </div>
+      </form>
+    </main>
+    <script src="js/store.js"></script>
+    <script src="js/peso.js"></script>
+    <script src="js/dom.js"></script>
+    <script src="js/new.js"></script>
+  </body>
+</html>
