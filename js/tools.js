@@ -43,22 +43,3 @@ function nextPaymentDate(schedule, fromIso) {
   }
   return null;
 }
-
-function removeAction(label, onConfirm) {
-  const wrap = node("div", "remove-control");
-  const ask = node("button", "danger-button", label);
-  const yes = node("button", "danger-button solid", "Yes, remove");
-  const keep = node("button", "quiet-action", "Keep");
-  [ask, yes, keep].forEach(function (button) {
-    button.type = "button";
-  });
-  ask.addEventListener("click", function () {
-    wrap.replaceChildren(yes, keep);
-  });
-  keep.addEventListener("click", function () {
-    wrap.replaceChildren(ask);
-  });
-  yes.addEventListener("click", onConfirm);
-  wrap.append(ask);
-  return wrap;
-}

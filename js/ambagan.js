@@ -1,6 +1,7 @@
 const groupId = new URLSearchParams(location.search).get("id");
 const group = findGroup(groupId);
 const tabNames = ["summary", "people", "spending", "history"];
+let before = JSON.stringify(group);
 let editingGoal = false;
 let editingSchedule = false;
 let openPerson = null;
@@ -30,13 +31,26 @@ function notify(text) {
   clearTimeout(noticeTimer);
   noticeTimer = setTimeout(function () {
     notice.textContent = "";
-  }, 4000);
+  }, 7000);
 }
 
-function record(text) {
+function record(text, mode) {
+  const previous = before;
   group.history.push({ text: text, at: new Date().toISOString() });
   updateGroup(group);
+  before = JSON.stringify(group);
   render();
+  if (mode === "quiet") {
+    return;
+  }
+  offerUndo(
+    text,
+    function () {
+      restoreFields(group, previous);
+      record("Reversed: " + text, "quiet");
+    },
+    mode === "restore" ? "Put it back" : "Undo",
+  );
 }
 
 function duesOf(name) {
@@ -65,6 +79,7 @@ function removePayment(item) {
   });
   record(
     item.name + "'s payment of " + formatCentavos(item.amount) + " was removed",
+    "restore",
   );
 }
 
@@ -74,18 +89,19 @@ function removeSpending(item) {
   });
   record(
     formatCentavos(item.amount) + " spent on " + item.what + " was removed",
+    "restore",
   );
 }
 
 function removeGoal() {
   group.goal = null;
   editingGoal = false;
-  record("The goal was removed");
+  record("The goal was removed", "restore");
 }
 
 function removeSchedule() {
   group.schedule = null;
-  record("The payment schedule was removed");
+  record("The payment schedule was removed", "restore");
 }
 
 function nextDayText(date, today) {
@@ -181,8 +197,8 @@ function drawSummary() {
     : formatCentavos(collected) + " collected";
   byId("meter").hidden = !goal;
   byId("meter").setAttribute("aria-label", percent + " percent of the goal");
-  byId("givers").hidden = total === 0;
-  byId("owed-line").hidden = true;
+  byId("given-rows").hidden = total === 0;
+  byId("owed-row").hidden = true;
   if (group.schedule && total > 0) {
     const upToDate = dues.filter(function (item) {
       return item.owed === 0;
@@ -190,24 +206,16 @@ function drawSummary() {
     const owed = dues.reduce(function (sum, item) {
       return sum + item.owed;
     }, 0);
-    fill(byId("givers"), [
-      bold(String(upToDate)),
-      " of ",
-      bold(String(total)),
-      " are up to date",
-    ]);
-    byId("owed-line").hidden = owed === 0;
-    fill(byId("owed-line"), [bold(formatCentavos(owed)), " still owed so far"]);
+    byId("givers-label").textContent = "People up to date";
+    byId("givers").textContent = upToDate + " of " + total;
+    byId("owed-row").hidden = owed === 0;
+    byId("owed-line").textContent = formatCentavos(owed);
   } else {
     const given = group.members.filter(function (name) {
       return givenBy(name) > 0;
     }).length;
-    fill(byId("givers"), [
-      bold(String(given)),
-      " of ",
-      bold(String(total)),
-      " have given",
-    ]);
+    byId("givers-label").textContent = "People who have given";
+    byId("givers").textContent = given + " of " + total;
   }
   byId("spent-total").textContent = formatCentavos(spent);
   byId("left-total").textContent = formatCentavos(left);
@@ -216,7 +224,12 @@ function drawSummary() {
   byId("fund-bar").style.setProperty("--spent", spentPercent);
   byId("fund-bar").style.setProperty("--left", 100 - spentPercent);
   byId("fund-note").textContent =
-    left === 0 ? "Nothing left in the fund" : spentPercent + " percent spent";
+    left === 0
+      ? "Nothing left in the fund"
+      : spentPercent +
+        " percent spent, " +
+        (100 - spentPercent) +
+        " percent left";
   setTimeout(function () {
     byId("meter-fill").style.setProperty("--w", percent + "%");
   }, 150);
@@ -319,7 +332,12 @@ function personRow(name) {
         : ["Nothing yet"],
     );
   }
-  person.append(bold(name), figures);
+  const nameLine = node("span", "name-line");
+  nameLine.append(bold(name));
+  if (name === group.holder) {
+    nameLine.append(node("span", "role small", "Holder"));
+  }
+  person.append(nameLine, figures);
   if (group.schedule) {
     person.append(stateNode(dues));
   }
@@ -378,7 +396,7 @@ function drawSpending() {
       const main = node("div", "bill-main");
       const side = node("div", "bill-side");
       main.append(
-        bold(capitalizeFirst(entry.what)),
+        bold(titleCase(entry.what)),
         node("span", "bill-line", dateLabel(entry)),
       );
       side.append(
@@ -394,8 +412,8 @@ function drawSpending() {
 
 function render() {
   byId("group").hidden = false;
-  document.title = "Hati, " + group.name;
-  byId("title").textContent = group.name;
+  document.title = group.name + " - Hati";
+  setGroupTitle(group.name);
   byId("note").textContent =
     (group.members.length || "No") + " people, only you can change anything";
   drawSummary();
@@ -538,7 +556,7 @@ byId("person-form").addEventListener("submit", function (event) {
 
 byId("spend-form").addEventListener("submit", function (event) {
   event.preventDefault();
-  const what = capitalizeFirst(byId("spend-what").value.trim());
+  const what = titleCase(byId("spend-what").value.trim());
   const amount = toCentavos(byId("spend-amount").value);
   const left = sumOf(group.contributions) - sumOf(group.spendings);
   if (what === "") {
@@ -573,7 +591,7 @@ byId("spend-form").addEventListener("submit", function (event) {
 });
 
 byId("spend-what").addEventListener("blur", function () {
-  byId("spend-what").value = capitalizeFirst(byId("spend-what").value.trim());
+  byId("spend-what").value = titleCase(byId("spend-what").value.trim());
 });
 
 byId("spend-date").value = todayIso();

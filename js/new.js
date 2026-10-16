@@ -1,33 +1,44 @@
 const params = new URLSearchParams(location.search);
 const type = params.get("type") === "ambagan" ? "ambagan" : "hangout";
-const form = document.getElementById("group-form");
-const nameInput = document.getElementById("name");
-const personInput = document.getElementById("person");
-const addButton = document.getElementById("add-person");
-const chipsList = document.getElementById("chips");
-const count = document.getElementById("count");
-const goalInput = document.getElementById("goal");
-const message = document.getElementById("message");
+const form = byId("group-form");
+const nameInput = byId("name");
+const holderInput = byId("holder");
+const personInput = byId("person");
+const addButton = byId("add-person");
+const chipsList = byId("chips");
+const count = byId("count");
+const goalInput = byId("goal");
+const message = byId("message");
 const people = [];
+let messageTimer;
 
-document.getElementById("page-title").textContent =
+byId("page-title").textContent =
   type === "ambagan" ? "New Ambagan" : "New Hangout";
-document.getElementById("goal-box").hidden = type !== "ambagan";
+byId("goal-box").hidden = type !== "ambagan";
+holderInput.value = localStorage.getItem("hati-holder") || "";
+nameInput.placeholder = type === "ambagan" ? "Class fund" : "Baguio trip";
+
+function say(text) {
+  message.textContent = text;
+  clearTimeout(messageTimer);
+  if (text) {
+    messageTimer = setTimeout(function () {
+      message.textContent = "";
+    }, 7000);
+  }
+}
 
 function countText() {
-  const total = people.length;
+  const others = people.length;
   if (type === "ambagan") {
-    return total === 0
+    return others === 0
       ? "You can add names later"
-      : total + (total === 1 ? " person" : " people");
+      : others + (others === 1 ? " person" : " people");
   }
-  if (total === 0) {
-    return "Add at least 2 people";
+  if (others === 0) {
+    return "Add at least 1 more person";
   }
-  if (total === 1) {
-    return "1 person, add one more";
-  }
-  return total + " people";
+  return others + 1 + " people, including you";
 }
 
 function renderPeople() {
@@ -50,35 +61,35 @@ function renderPeople() {
   count.textContent = countText();
 }
 
-function addNames(text) {
-  let problem = "";
-  const pieces = text
+function readNames(text) {
+  return text
     .split(/[\n,]+/)
     .map(function (piece) {
       return capitalizeWords(piece.trim());
     })
     .filter(Boolean);
-  for (const piece of pieces) {
+}
+
+function addNames(text) {
+  const holder = capitalizeWords(holderInput.value.trim());
+  let problem = "";
+  for (const piece of readNames(text)) {
+    const taken = people.concat(holder ? [holder] : []).some(function (name) {
+      return name.toLowerCase() === piece.toLowerCase();
+    });
     if (piece.length > 20) {
       problem = "Keep each name to 20 letters or fewer";
-      continue;
-    }
-    if (
-      people.some(function (name) {
-        return name.toLowerCase() === piece.toLowerCase();
-      })
-    ) {
+    } else if (taken) {
       problem = piece + " is already added";
-      continue;
-    }
-    if (people.length >= 60) {
+    } else if (people.length >= 59) {
       problem = "That is more than 60 people";
       break;
+    } else {
+      people.push(piece);
     }
-    people.push(piece);
   }
   renderPeople();
-  message.textContent = problem;
+  say(problem);
 }
 
 function takeTypedName() {
@@ -99,12 +110,26 @@ personInput.addEventListener("paste", function (event) {
   addNames(event.clipboardData.getData("text"));
 });
 
+personInput.addEventListener("input", function () {
+  const pieces = readNames(personInput.value);
+  if (pieces.length === 0) {
+    count.textContent = countText();
+    return;
+  }
+  fill(count, ["Press Enter to add ", bold(pieces.join(", "))]);
+});
+
 addButton.addEventListener("click", takeTypedName);
 goalInput.addEventListener("input", function () {
-  nameInput.addEventListener("blur", function () {
-    nameInput.value = capitalizeWords(nameInput.value.trim());
-  });
   reformat(goalInput);
+});
+
+nameInput.addEventListener("blur", function () {
+  nameInput.value = capitalizeWords(nameInput.value.trim());
+});
+
+holderInput.addEventListener("blur", function () {
+  holderInput.value = capitalizeWords(holderInput.value.trim());
 });
 
 form.addEventListener("submit", function (event) {
@@ -114,19 +139,26 @@ form.addEventListener("submit", function (event) {
     personInput.value = "";
   }
   const name = capitalizeWords(nameInput.value.trim());
+  const holder = capitalizeWords(holderInput.value.trim());
   if (name === "") {
-    message.textContent = "Give the group a name";
+    say("Give the group a name");
     return;
   }
-  if (type === "hangout" && people.length < 2) {
-    message.textContent = "Add at least 2 people";
+  if (holder === "") {
+    say("Type your name");
     return;
   }
+  if (type === "hangout" && people.length < 1) {
+    say("Add at least 1 more person");
+    return;
+  }
+  localStorage.setItem("hati-holder", holder);
   const group = {
     id: newId(),
     type: type,
     name: name,
-    members: people.slice(),
+    holder: holder,
+    members: type === "hangout" ? [holder].concat(people) : people.slice(),
     history: [{ text: "Group created", at: new Date().toISOString() }],
   };
   if (type === "hangout") {
@@ -139,21 +171,7 @@ form.addEventListener("submit", function (event) {
   }
   addGroup(group);
   location.href =
-    type === "hangout" ? "group.html?id=" + group.id : "index.html";
+    (type === "hangout" ? "group.html" : "ambagan.html") + "?id=" + group.id;
 });
 
 renderPeople();
-
-personInput.addEventListener("input", function () {
-  const pieces = personInput.value
-    .split(/[\n,]+/)
-    .map(function (piece) {
-      return capitalizeWords(piece.trim());
-    })
-    .filter(Boolean);
-  if (pieces.length === 0) {
-    count.textContent = countText();
-    return;
-  }
-  fill(count, ["Press Enter to add ", bold(pieces.join(", "))]);
-});

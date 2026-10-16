@@ -18,7 +18,7 @@ function capitalizeWords(text) {
   });
 }
 
-function capitalizeFirst(text) {
+function titleCase(text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
@@ -125,4 +125,185 @@ function drawHistory(group) {
       item.append(text, node("span", "time", dayLabel(entry.at)));
       list.append(item);
     });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const watcher = new MutationObserver(function (records) {
+    records.forEach(function (record) {
+      const line = record.target;
+      if (line.textContent.trim() === "") {
+        return;
+      }
+      line.classList.remove("shout");
+      void line.offsetWidth;
+      line.classList.add("shout");
+      line.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    });
+  });
+  document.querySelectorAll(".status-line").forEach(function (line) {
+    watcher.observe(line, { childList: true });
+  });
+});
+
+const undoFields = [
+  "name",
+  "holder",
+  "members",
+  "bills",
+  "payments",
+  "contributions",
+  "spendings",
+  "goal",
+  "schedule",
+];
+let undoTimer;
+
+function restoreFields(group, previous) {
+  const old = JSON.parse(previous);
+  undoFields.forEach(function (field) {
+    if (field in old) {
+      group[field] = old[field];
+    } else {
+      delete group[field];
+    }
+  });
+}
+
+function offerUndo(text, onUndo, buttonLabel) {
+  let bar = document.getElementById("undo-bar");
+  if (!bar) {
+    bar = node("div", "toast");
+    bar.id = "undo-bar";
+    document.body.append(bar);
+  }
+  const message = node("span", "", text);
+  const button = node("button", "", buttonLabel || "Undo");
+  button.type = "button";
+  bar.replaceChildren(message, button);
+  bar.hidden = false;
+  clearTimeout(undoTimer);
+  undoTimer = setTimeout(function () {
+    bar.hidden = true;
+  }, 8000);
+  button.addEventListener("click", function () {
+    bar.hidden = true;
+    clearTimeout(undoTimer);
+    onUndo();
+  });
+}
+
+function titleCase(text) {
+  const small = [
+    "a",
+    "an",
+    "and",
+    "at",
+    "for",
+    "in",
+    "of",
+    "on",
+    "or",
+    "the",
+    "to",
+  ];
+  return text
+    .split(" ")
+    .map(function (word, index) {
+      if (index > 0 && small.includes(word.toLowerCase())) {
+        return word.toLowerCase();
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
+function setGroupTitle(text) {
+  const title = byId("title");
+  const role = document.querySelector(".group-title .role");
+  const words = text.split(" ");
+  const last = node("span", "nowrap", words.pop());
+  title.replaceChildren(
+    document.createTextNode(words.length ? words.join(" ") + " " : ""),
+    last,
+  );
+  if (role) {
+    last.append(role);
+  }
+}
+
+function removeAction(label, onConfirm, yesLabel) {
+  const wrap = node("div", "remove-control");
+  const ask = node("button", "danger-button", label);
+  const yes = node("button", "danger-button solid", yesLabel || "Yes, remove");
+  const keep = node("button", "quiet-action", "Keep");
+  [ask, yes, keep].forEach(function (button) {
+    button.type = "button";
+  });
+  ask.addEventListener("click", function () {
+    wrap.replaceChildren(yes, keep);
+  });
+  keep.addEventListener("click", function () {
+    wrap.replaceChildren(ask);
+  });
+  yes.addEventListener("click", onConfirm);
+  wrap.append(ask);
+  return wrap;
+}
+
+function titleCase(text) {
+  const small = [
+    "a",
+    "an",
+    "and",
+    "at",
+    "for",
+    "in",
+    "of",
+    "on",
+    "or",
+    "the",
+    "to",
+  ];
+  return text
+    .split(" ")
+    .map(function (word, index) {
+      if (index > 0 && small.includes(word.toLowerCase())) {
+        return word.toLowerCase();
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
+function setGroupTitle(text) {
+  const title = byId("title");
+  const role = document.querySelector(".group-title .role");
+  const words = text.split(" ");
+  const last = node("span", "nowrap", words.pop());
+  title.replaceChildren(
+    document.createTextNode(words.length ? words.join(" ") + " " : ""),
+    last,
+  );
+  if (role) {
+    last.append(role);
+  }
+}
+
+function removeAction(label, onConfirm, yesLabel) {
+  const wrap = node("div", "remove-control");
+  const ask = node("button", "danger-button", label);
+  const yes = node("button", "danger-button solid", yesLabel || "Yes, remove");
+  const keep = node("button", "quiet-action", "Keep");
+  [ask, yes, keep].forEach(function (button) {
+    button.type = "button";
+  });
+  ask.addEventListener("click", function () {
+    wrap.replaceChildren(yes, keep);
+  });
+  keep.addEventListener("click", function () {
+    wrap.replaceChildren(ask);
+  });
+  yes.addEventListener("click", onConfirm);
+  wrap.append(ask);
+  return wrap;
 }

@@ -28,7 +28,7 @@ function standingsOf(group) {
   list.forEach(function (row) {
     row.balance = row.paid - row.share;
   });
-  group.payments.forEach(function (payment) {
+  (group.bills.length ? group.payments : []).forEach(function (payment) {
     rows[payment.from].balance += payment.amount;
     rows[payment.to].balance -= payment.amount;
   });
@@ -82,9 +82,11 @@ function totalsOf(group, rows) {
   const spent = group.bills.reduce(function (sum, bill) {
     return sum + bill.amount;
   }, 0);
-  const settled = group.payments.reduce(function (sum, payment) {
-    return sum + payment.amount;
-  }, 0);
+  const settled = group.bills.length
+    ? group.payments.reduce(function (sum, payment) {
+        return sum + payment.amount;
+      }, 0)
+    : 0;
   const remaining = rows.reduce(function (sum, row) {
     return row.balance > 0 ? sum + row.balance : sum;
   }, 0);

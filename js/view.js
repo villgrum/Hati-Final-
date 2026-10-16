@@ -8,6 +8,7 @@ async function openGroup() {
     }
     const data = result.data;
     data.version = result.version;
+    data.updatedAt = result.updated_at;
     data.remoteId = remoteId;
     sessionStorage.setItem("hati-view", JSON.stringify(data));
     location.replace(

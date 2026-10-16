@@ -13,6 +13,7 @@
       href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;800&display=swap"
       rel="stylesheet"
     />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
@@ -56,14 +57,32 @@
       </section>
       <section class="how block">
         <h2 class="section-title">How it works</h2>
-        <ol>
-          <li>You create a group and keep track of the money as the holder</li>
-          <li>
-            You share a view-only link, friends can see everything and change
-            nothing
-          </li>
-          <li>You mark payments as paid as people settle up</li>
-        </ol>
+        <div class="how-grid">
+          <ol>
+            <li>
+              You create a group and keep track of the money as the holder
+            </li>
+            <li>
+              You share a view-only link, friends see everything and change
+              nothing
+            </li>
+            <li>
+              When you record something, friends see a New changes bar and
+              update with one tap
+            </li>
+          </ol>
+          <div class="thread" aria-label="Example of a friend seeing a change">
+            <p class="bubble out" style="--i: 0">
+              You marked Ben's ₱200 as paid
+            </p>
+            <p class="bubble alert" style="--i: 1">
+              <span>New changes</span><span class="mini">Update</span>
+            </p>
+            <p class="bubble" style="--i: 2">
+              <span class="who">Ben</span>Settled
+            </p>
+          </div>
+        </div>
       </section>
     </main>
     <footer>

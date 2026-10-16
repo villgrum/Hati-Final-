@@ -42,11 +42,21 @@ function addGroup(group) {
 }
 
 function updateGroup(updated) {
-  saveGroups(
-    loadGroups().map(function (group) {
-      return group.id === updated.id ? updated : group;
-    }),
-  );
+  const groups = loadGroups();
+  const index = groups.findIndex(function (group) {
+    return group.id === updated.id;
+  });
+  if (index === -1) {
+    return;
+  }
+  if (groups[index].remote) {
+    updated.remote = groups[index].remote;
+  }
+  if (!updated.holder && groups[index].holder) {
+    updated.holder = groups[index].holder;
+  }
+  groups[index] = updated;
+  saveGroups(groups);
   if (updated.remote && typeof syncGroup === "function") {
     syncGroup(updated.id);
   }

@@ -48,6 +48,7 @@ function setSyncState(text) {
   const element = document.getElementById("sync-state");
   if (element) {
     element.textContent = text;
+    element.classList.toggle("failed", text.startsWith("Could not"));
   }
 }
 
@@ -161,7 +162,11 @@ async function pushNow(groupId) {
     const version = await callRpc("save_group", {
       p_id: group.remote.id,
       p_secret: group.remote.secret,
-      p_data: shareData(group, group.remote.mode, group.remote.holder),
+      p_data: shareData(
+        group,
+        group.remote.mode,
+        group.holder || group.remote.holder,
+      ),
       p_log: group.history,
       p_expected: group.remote.version,
     });

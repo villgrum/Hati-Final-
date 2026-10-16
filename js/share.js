@@ -23,7 +23,9 @@ function buildSharePanel(groupId, type) {
   nameInput.maxLength = 20;
   nameInput.autocomplete = "off";
   nameInput.placeholder = "Ana";
-  nameInput.value = localStorage.getItem("hati-holder") || "";
+  nameInput.value =
+    findGroup(groupId).holder || localStorage.getItem("hati-holder") || "";
+  nameLabel.hidden = nameInput.hidden = Boolean(findGroup(groupId).holder);
   output.type = "text";
   output.id = "share-link";
   output.readOnly = true;
@@ -74,7 +76,7 @@ function buildSharePanel(groupId, type) {
     const holder = capitalizeWords(nameInput.value.trim());
     const known = findGroup(groupId).remote;
     const fallback = type === "ambagan" ? "totals" : "everyone";
-    state.textContent = "Creating your link";
+    setSyncState("Creating your link");
     try {
       const remote = await ensureRemote(
         groupId,
@@ -83,10 +85,11 @@ function buildSharePanel(groupId, type) {
       );
       output.value = viewLink(remote.id);
       showMode(remote.mode);
-      state.textContent =
-        "The link stays the same, friends see changes when they refresh";
+      setSyncState(
+        "The link stays the same, friends see changes when they refresh",
+      );
     } catch (error) {
-      state.textContent = "Could not create the link: " + error.message;
+      setSyncState("Could not create the link: " + error.message);
     }
   };
 
@@ -127,7 +130,10 @@ function addShare(groupId, type) {
   const actions = node("div", "top-actions");
   const button = node("button", "button ghost small", "Share");
   const panel = buildSharePanel(groupId, type);
-  const add = byId("add-bill");
+    const add = byId("add-bill");
+  new MutationObserver(function () {
+    button.setAttribute("aria-expanded", String(!panel.hidden));
+  }).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
   button.type = "button";
   button.addEventListener("click", function () {
     panel.hidden = !panel.hidden;
@@ -204,8 +210,8 @@ function applyReadOnly(group) {
   } else {
     note.textContent = "Ask the holder to change anything";
   }
-  copy.textContent =
-    "Last updated " + when + ", reload the page to see changes";
+  copy.textContent = copy.id = "copy-note";
+  copy.textContent = "Last updated " + when;
   note.after(copy);
   if (group.type !== "ambagan") {
     return;

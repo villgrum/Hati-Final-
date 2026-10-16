@@ -1,24 +1,49 @@
-const id = new URLSearchParams(location.search).get("id");
+const params = new URLSearchParams(location.search);
+const id = params.get("id");
 const group = findGroup(id);
+const editing = group
+  ? group.bills.find(function (bill) {
+      return bill.id === params.get("bill");
+    })
+  : undefined;
 
-if (!group || group.type !== "hangout") {
+if (!group || group.type !== "hangout" || (params.get("bill") && !editing)) {
   location.replace("index.html");
 }
 
-const form = document.getElementById("bill-form");
-const whatInput = document.getElementById("what");
-const category = document.getElementById("category");
-const customBox = document.getElementById("custom-box");
-const custom = document.getElementById("custom");
-const amountInput = document.getElementById("amount");
-const payer = document.getElementById("payer");
-const peopleBox = document.getElementById("people");
-const shareLine = document.getElementById("share-line");
-const dateInput = document.getElementById("when");
-const message = document.getElementById("message");
+const form = byId("bill-form");
+const whatInput = byId("what");
+const category = byId("category");
+const customBox = byId("custom-box");
+const custom = byId("custom");
+const amountInput = byId("amount");
+const payer = byId("payer");
+const peopleBox = byId("people");
+const shareLine = byId("share-line");
+const dateInput = byId("when");
+const message = byId("message");
 const checkboxes = [];
+const today = new Date().toLocaleDateString("en-CA");
+let messageTimer;
 
-document.getElementById("back").href = "group.html?id=" + id;
+byId("back").href = "group.html?id=" + id + (editing ? "#bills" : "");
+
+function say(text) {
+  message.textContent = text;
+  clearTimeout(messageTimer);
+  if (text) {
+    messageTimer = setTimeout(function () {
+      message.textContent = "";
+    }, 7000);
+  }
+}
+
+const choose = document.createElement("option");
+choose.value = "";
+choose.textContent = "Choose who paid";
+choose.disabled = true;
+choose.selected = true;
+payer.append(choose);
 
 group.members.forEach(function (name) {
   const option = document.createElement("option");
@@ -63,17 +88,37 @@ function showShare() {
   fill(shareLine, parts);
 }
 
-const today = new Date().toLocaleDateString("en-CA");
+function prefill(bill) {
+  const known = Array.from(category.options).some(function (option) {
+    return option.value === bill.category;
+  });
+  whatInput.value = bill.what;
+  category.value = known ? bill.category : "Other";
+  customBox.hidden = known;
+  custom.value = known ? "" : bill.category;
+  amountInput.value = formatPesoText(String(bill.amount / 100));
+  payer.value = bill.payer;
+  checkboxes.forEach(function (box) {
+    box.checked = bill.sharers.includes(box.value);
+  });
+  dateInput.value = bill.date;
+  showShare();
+}
+
 dateInput.value = today;
 dateInput.max = today;
 
-whatInput.addEventListener("blur", function () {
-  whatInput.value = capitalizeFirst(whatInput.value.trim());
-});
-
-custom.addEventListener("blur", function () {
-  custom.value = capitalizeFirst(custom.value.trim());
-});
+if (editing) {
+  byId("page-title").textContent = "Edit a bill";
+  byId("save").textContent = "Save changes";
+  if (group.payments.length > 0) {
+    byId("blocked").textContent =
+      "Undo the payments in Settle up first, then edit this bill";
+    form.hidden = true;
+  } else {
+    prefill(editing);
+  }
+}
 
 amountInput.addEventListener("input", function () {
   reformat(amountInput);
@@ -91,46 +136,73 @@ category.addEventListener("change", function () {
   }
 });
 
+whatInput.addEventListener("blur", function () {
+  whatInput.value = titleCase(whatInput.value.trim());
+});
+
+custom.addEventListener("blur", function () {
+  custom.value = titleCase(custom.value.trim());
+});
+
 form.addEventListener("submit", function (event) {
   event.preventDefault();
-  const what = capitalizeFirst(whatInput.value.trim());
+  const what = titleCase(whatInput.value.trim());
   const amount = toCentavos(amountInput.value);
   const chosen = sharers();
   const label =
     category.value === "Other"
-      ? capitalizeFirst(custom.value.trim())
+      ? titleCase(custom.value.trim())
       : category.value;
   if (what === "") {
-    message.textContent = "Say what it was for";
+    say("Say what it was for");
+    return;
+  }
+  if (category.value === "") {
+    say("Choose a category");
     return;
   }
   if (label === "") {
-    message.textContent = "Type the category";
+    say("Type the category");
     return;
   }
   if (amount === 0) {
-    message.textContent = "Enter how much it cost";
+    say("Enter how much it cost");
+    return;
+  }
+  if (payer.value === "") {
+    say("Choose who paid");
     return;
   }
   if (chosen.length === 0) {
-    message.textContent = "Pick at least one person who shared it";
+    say("Pick at least one person who shared it");
     return;
   }
-  group.bills.push({
-    id: newId(),
+  const fields = {
     what: what,
     category: label,
     amount: amount,
     payer: payer.value,
     sharers: chosen,
     date: dateInput.value,
-  });
-  group.history.push({
-    text: payer.value + " added " + what + ", " + formatCentavos(amount),
-    at: new Date().toISOString(),
-  });
+  };
+  let text;
+  if (editing) {
+    const change =
+      editing.amount !== amount
+        ? " from " +
+          formatCentavos(editing.amount) +
+          " to " +
+          formatCentavos(amount)
+        : "";
+    text = payer.value + " changed " + what + change;
+    Object.assign(editing, fields);
+  } else {
+    text = payer.value + " added " + what + ", " + formatCentavos(amount);
+    group.bills.push(Object.assign({ id: newId() }, fields));
+  }
+  group.history.push({ text: text, at: new Date().toISOString() });
   updateGroup(group);
   flushSync(id).finally(function () {
-    location.href = "group.html?id=" + id;
+    location.href = "group.html?id=" + id + (editing ? "#bills" : "");
   });
 });

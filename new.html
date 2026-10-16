@@ -6,13 +6,14 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <title>Hati, new group</title>
+    <title>Hati</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;800&display=swap"
       rel="stylesheet"
     />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
@@ -34,14 +35,25 @@
           placeholder="Baguio trip"
         />
 
-        <label class="field" for="person">Who is in it</label>
+        <label class="field" for="holder"
+          >Your name <span class="muted">you are the holder</span></label
+        >
+        <input
+          type="text"
+          id="holder"
+          maxlength="20"
+          autocomplete="off"
+          placeholder="Ana"
+        />
+
+        <label class="field" for="person">Who else is in it</label>
         <div class="entry">
           <input
             type="text"
             id="person"
             maxlength="20"
             autocomplete="off"
-            placeholder="Ana, Ben, Carla"
+            placeholder="Ben"
           />
           <button class="button ghost small" type="button" id="add-person">
             Add

@@ -13,6 +13,7 @@
       href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;800&display=swap"
       rel="stylesheet"
     />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
@@ -59,28 +60,35 @@
             </div>
             <form class="goal-form" id="goal-form" hidden novalidate>
               <label class="field" for="goal">Goal</label>
-              <div class="inline-form">
-                <div class="money">
-                  <span>₱</span>
-                  <input
-                    type="text"
-                    id="goal"
-                    inputmode="decimal"
-                    autocomplete="off"
-                    placeholder="10,000"
-                  />
-                </div>
-                <button class="button small" type="submit">Save goal</button>
+              <div class="money">
+                <span>₱</span>
+                <input
+                  type="text"
+                  id="goal"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  placeholder="10,000"
+                />
               </div>
-              <div class="row-actions">
-                <button class="quiet-action" type="button" id="goal-cancel">
-                  Cancel
-                </button>
+              <div class="form-bar">
+                <div class="left-actions">
+                  <button class="button small" type="submit">Save goal</button>
+                  <button class="quiet-action" type="button" id="goal-cancel">
+                    Cancel
+                  </button>
+                </div>
                 <span id="goal-remove-slot"></span>
               </div>
             </form>
-            <p class="sub" id="givers"></p>
-            <p class="sub owed" id="owed-line" hidden></p>
+            <ul class="rows" id="given-rows">
+              <li>
+                <span id="givers-label"></span><strong id="givers"></strong>
+              </li>
+              <li id="owed-row" hidden>
+                <span>Still owed so far</span
+                ><strong class="owed" id="owed-line"></strong>
+              </li>
+            </ul>
           </div>
 
           <div class="panel">
@@ -174,7 +182,7 @@
               type="text"
               id="person"
               autocomplete="off"
-              placeholder="Ana, Ben, Carla"
+              placeholder="Ana"
             />
             <button class="button ghost small" type="submit">Add</button>
           </form>
@@ -227,6 +235,8 @@
     <script src="js/config.js"></script>
     <script src="js/sync.js"></script>
     <script src="js/share.js"></script>
+    <script src="js/rename.js"></script>
+    <script src="js/updates.js"></script>
     <script src="js/ambagan.js"></script>
   </body>
 </html>
