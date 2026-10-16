@@ -93,7 +93,6 @@ function buildEditForm(close) {
   const message = node("p", "status-line");
   const actions = node("div", "form-actions");
   const save = node("button", "button small", "Save changes");
-  const cancel = node("button", "quiet-action", "Cancel");
   const zone = node("div", "danger-zone");
   let timer;
   const say = function (text) {
@@ -118,9 +117,7 @@ function buildEditForm(close) {
       return { from: name, input: input };
     });
   save.type = "submit";
-  cancel.type = "button";
-  cancel.addEventListener("click", close);
-  actions.append(save, cancel);
+  actions.append(save);
   zone.append(
     node(
       "p",
@@ -135,7 +132,12 @@ function buildEditForm(close) {
       "Yes, delete",
     ),
   );
-  form.append(title.label);
+  const head = node("div", "panel-head");
+  const closeButton = node("button", "quiet-action", "Close");
+  closeButton.type = "button";
+  closeButton.addEventListener("click", close);
+  head.append(node("h2", "section-title", "Edit group"), closeButton);
+  form.append(head, title.label);
   if (you) {
     form.append(you.label);
   }

@@ -50,7 +50,7 @@ function notify(text) {
 
 function removeBill(bill) {
   if (group.payments.length > 0) {
-    notify("Undo the payments in Settle up first, then remove the bill");
+    notify("Cancel the payments in Settle up first, then remove the bill");
     return;
   }
   group.bills = group.bills.filter(function (item) {
